@@ -1,0 +1,17 @@
+# Kconfig.w1_gpio - GPIO 1-Wire driver configuration options
+
+#
+# Copyright (c) 2019 Sven Schwermer
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+menuconfig W1_GPIO
+	bool "GPIO 1-Wire controller driver"
+	depends on GPIO
+	help
+	  Enable support for GPIO 1-Wire bus master controllers.
+
+if W1_GPIO
+
+endif # W1_GPIO

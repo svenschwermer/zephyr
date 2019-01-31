@@ -1,0 +1,38 @@
+# Kconfig - 1-Wire driver configuration options
+
+#
+# Copyright (c) 2019 Sven Schwermer
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+#
+# 1-Wire Drivers
+#
+menuconfig W1
+	bool "1-Wire bus support"
+	select HAS_DTS_W1
+	help
+	  Enable support for the 1-Wire bus.
+
+if W1
+
+config W1_ASYNC
+	bool "Enable Asynchronous call support"
+	select POLL
+	help
+	  This option enables the asynchronous API calls.
+
+config W1_INIT_PRIORITY
+	int "Init priority"
+	default 70
+	help
+	  Device driver initialization priority.
+
+module = 1-Wire
+module-str = w1
+source "subsys/logging/Kconfig.template.log_config"
+
+source "drivers/w1/Kconfig.gpio"
+
+endif # W1

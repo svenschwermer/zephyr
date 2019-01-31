@@ -1,0 +1,17 @@
+# Kconfig - Maxim DS18B20 Programmable Resolution 1-Wire Digital Thermometer
+
+#
+# Copyright (c) 2019 Sven Schwermer
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+menuconfig DS18B20
+	bool "Maxim DS18B20 1-Wire temperature sensor"
+	depends on W1
+	help
+	  Enable Maxim DS18B20 Programmable Resolution 1-Wire Digital Thermometer.
+
+if DS18B20
+
+endif # DS18B20
