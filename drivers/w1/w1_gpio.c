@@ -21,18 +21,41 @@ struct w1_gpio_context {
 	u32_t data_pin;
 };
 
+#ifdef NRF_DRIVER
+#include <nrf.h>
+#endif
+
 static u8_t read_bit(void *context)
 {
 	struct w1_gpio_context *ctx = context;
+#ifdef NRF_DRIVER
+	NRF_P0->DIRCLR = 1ul << ctx->data_pin;
+	return (NRF_P0->IN >> ctx->data_pin) & 0x1;
+#else
 	u32_t value = 0;
+	gpio_pin_configure(ctx->gpio, ctx->data_pin,
+			   GPIO_DIR_IN | GPIO_PUD_PULL_UP | GPIO_DS_DFLT_LOW |
+				   GPIO_DS_DISCONNECT_HIGH);
 	gpio_pin_read(ctx->gpio, ctx->data_pin, &value);
 	return value & 0x1;
+#endif
 }
 
 static void write_bit(void *context, u8_t bit)
 {
 	struct w1_gpio_context *ctx = context;
+#ifdef NRF_DRIVER
+	NRF_P0->DIRSET = 1ul << ctx->data_pin;
+	if (bit)
+		NRF_P0->OUTSET = 1ul << ctx->data_pin;
+	else
+		NRF_P0->OUTCLR = 1ul << ctx->data_pin;
+#else
+	gpio_pin_configure(ctx->gpio, ctx->data_pin,
+			   GPIO_DIR_OUT | GPIO_PUD_PULL_UP | GPIO_DS_DFLT_LOW |
+				   GPIO_DS_DISCONNECT_HIGH);
 	gpio_pin_write(ctx->gpio, ctx->data_pin, bit);
+#endif
 }
 
 static struct w1_driver_api api = {
@@ -42,6 +65,7 @@ static struct w1_driver_api api = {
 
 static int w1_gpio_init(struct device *dev)
 {
+	int result;
 	struct w1_driver_data *data = dev->driver_data;
 	struct w1_gpio_context *ctx = data->context;
 	const struct w1_gpio_config *config = dev->config->config_info;
@@ -52,10 +76,15 @@ static int w1_gpio_init(struct device *dev)
 	}
 	ctx->data_pin = config->data_pin;
 
-	return gpio_pin_configure(ctx->gpio, ctx->data_pin,
-				  GPIO_DIR_OUT | GPIO_PUD_PULL_UP |
-					  GPIO_DS_DFLT_LOW |
-					  GPIO_DS_DISCONNECT_HIGH);
+	result = gpio_pin_configure(ctx->gpio, ctx->data_pin,
+				    GPIO_DIR_IN | GPIO_PUD_PULL_UP |
+					    GPIO_DS_DFLT_LOW |
+					    GPIO_DS_DISCONNECT_HIGH);
+	if (result)
+		return result;
+
+	write_bit(ctx, 1);
+	return 0;
 }
 
 static struct w1_gpio_context w1_gpio_dev_ctx_1;

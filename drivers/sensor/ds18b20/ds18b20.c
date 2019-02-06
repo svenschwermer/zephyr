@@ -57,9 +57,8 @@ static int ds18b20_sample_fetch(struct device *dev, enum sensor_channel chan)
 
 		w1_write_8(ds18b20->bus_master, W1_CONVERT_TEMP);
 
-		if (external_power) {
+		if (external_power)
 			k_sleep(delay);
-		}
 
 		if (w1_reset_select_slave(ds18b20->bus_master))
 			continue;
