@@ -1,0 +1,41 @@
+# Copyright (c) 2019 Sven Schwermer
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+menuconfig W1_NRFX
+	bool "nRF 1-Wire bitbanging driver"
+	depends on SOC_FAMILY_NRF
+	help
+	  Enable 1-Wire bitbanging driver for nRF line of MCUs.
+
+if W1_NRFX
+
+config W1_NRFX_NAME
+	string "Driver name"
+	default "W1_0"
+	help
+	  Name for the device instance of the nRF 1-Wire bitbanging driver.
+
+choice W1_NRFX_GPIO_INST
+	prompt "GPIO port"
+	help
+	  GPIO port that the 1-Wire bus is connected to.
+
+config W1_NRFX_GPIO_0
+	bool "nRF GPIO Port P0"
+	depends on HAS_HW_NRF_GPIO0
+
+config W1_NRFX_GPIO_1
+	bool "nRF GPIO Port P1"
+	depends on HAS_HW_NRF_GPIO1
+
+endchoice
+
+config W1_NRFX_GPIO_PIN
+	int "GPIO pin number"
+	help
+	  GPIO pin that the 1-Wire bus is connected to.
+
+
+endif # W1_NRFX

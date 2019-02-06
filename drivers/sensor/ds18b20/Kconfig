@@ -14,4 +14,16 @@ menuconfig DS18B20
 
 if DS18B20
 
+config DS18B20_NAME
+	string "Driver name"
+	default "TEMP_0"
+	help
+	  Name for the device instance of the DS18B20 driver.
+
+config DS18B20_W1_INST
+	string "1-Wire bus name"
+	default "W1_0"
+	help
+	  Name for the device instance 1-Wire bus driver.
+
 endif # DS18B20

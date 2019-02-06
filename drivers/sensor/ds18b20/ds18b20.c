@@ -117,9 +117,9 @@ static int ds18b20_init(struct device *dev)
 static struct ds18b20_device_data ds18b20_data_1;
 
 static struct ds18b20_device_config ds18b20_config_1 = {
-	.bus_name = DT_DS18B20_1_BUS_NAME,
+	.bus_name = CONFIG_DS18B20_W1_INST,
 };
 
-DEVICE_AND_API_INIT(ds18b20_1, DT_DS18B20_1_NAME, ds18b20_init, &ds18b20_data_1,
-		    &ds18b20_config_1, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY,
-		    &ds18b20_api);
+DEVICE_AND_API_INIT(ds18b20_1, CONFIG_DS18B20_NAME, ds18b20_init,
+		    &ds18b20_data_1, &ds18b20_config_1, POST_KERNEL,
+		    CONFIG_SENSOR_INIT_PRIORITY, &ds18b20_api);
