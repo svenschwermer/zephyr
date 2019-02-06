@@ -24,7 +24,6 @@ static const u8_t w1_crc8_table[] = {
 
 static u8_t w1_read_bit(struct device *dev);
 static void w1_write_bit(struct device *dev, int bit);
-static u8_t w1_touch_bit(struct device *dev, int bit);
 static void w1_pre_write(struct device *dev);
 static void w1_post_write(struct device *dev);
 
@@ -33,7 +32,7 @@ u8_t w1_read_8(struct device *dev)
 	u8_t res = 0;
 	int i;
 	for (i = 0; i < 8; ++i)
-		res |= (w1_touch_bit(dev, 1) << i);
+		res |= (w1_read_bit(dev) << i);
 	return res;
 }
 
@@ -44,7 +43,7 @@ void w1_write_8(struct device *dev, u8_t byte)
 	for (i = 0; i < 8; ++i) {
 		if (i == 7)
 			w1_pre_write(dev);
-		w1_touch_bit(dev, (byte >> i) & 0x1);
+		w1_write_bit(dev, (byte >> i) & 0x1);
 	}
 	w1_post_write(dev);
 }
@@ -63,7 +62,8 @@ int w1_reset_bus(struct device *dev)
 	k_busy_wait(70);
 
 	result = api->read_bit(ctx) & 0x1;
-	k_sleep(1);
+
+	k_busy_wait(1000);
 
 	return result;
 }
@@ -130,26 +130,15 @@ static void w1_write_bit(struct device *dev, int bit)
 
 	// TODO: disable IRQs?
 
+	api->write_bit(ctx, 0);
 	if (bit) {
-		api->write_bit(ctx, 0);
 		k_busy_wait(6);
 		api->write_bit(ctx, 1);
 		k_busy_wait(64);
 	} else {
-		api->write_bit(ctx, 0);
 		k_busy_wait(60);
 		api->write_bit(ctx, 1);
 		k_busy_wait(10);
-	}
-}
-
-static u8_t w1_touch_bit(struct device *dev, int bit)
-{
-	if (bit)
-		return w1_read_bit(dev);
-	else {
-		w1_write_bit(dev, 0);
-		return 0;
 	}
 }
 
