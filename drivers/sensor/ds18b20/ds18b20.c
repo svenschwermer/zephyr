@@ -86,9 +86,10 @@ static int ds18b20_channel_get(struct device *dev, enum sensor_channel chan,
 		return -ENOTSUP;
 	}
 
-	s16_t t = sys_get_le16(ds18b20->mem);
-	val->val1 = t >> 4;
-	val->val2 = t & 0xf;
+	s32_t t = sys_get_le16(ds18b20->mem);
+	t *= (1000000 / 0x10);
+	val->val1 = t / 1000000;
+	val->val2 = t % 1000000;
 
 	return 0;
 }
