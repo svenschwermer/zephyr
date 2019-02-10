@@ -54,7 +54,7 @@ int w1_reset_bus(struct device *dev)
 	const struct w1_driver_api *api = w1_api(dev);
 	void *ctx = w1_data(dev)->context;
 
-	int key = irq_lock();
+	// TODO: disable IRQs?
 
 	api->write_bit(ctx, 0);
 	k_busy_wait(500);
@@ -62,8 +62,6 @@ int w1_reset_bus(struct device *dev)
 	k_busy_wait(70);
 
 	result = api->read_bit(ctx) & 0x1;
-
-	irq_unlock(key);
 
 	k_busy_wait(1000);
 
@@ -112,7 +110,7 @@ static u8_t w1_read_bit(struct device *dev)
 	const struct w1_driver_api *api = w1_api(dev);
 	void *ctx = w1_data(dev)->context;
 
-	int key = irq_lock();
+	// TODO: disable IRQs?
 
 	api->write_bit(ctx, 0);
 	k_busy_wait(6);
@@ -120,8 +118,6 @@ static u8_t w1_read_bit(struct device *dev)
 	k_busy_wait(9);
 
 	result = api->read_bit(ctx);
-
-	irq_unlock(key);
 
 	k_busy_wait(55);
 
@@ -133,7 +129,7 @@ static void w1_write_bit(struct device *dev, int bit)
 	const struct w1_driver_api *api = w1_api(dev);
 	void *ctx = w1_data(dev)->context;
 
-	int key = irq_lock();
+	// TODO: disable IRQs?
 
 	api->write_bit(ctx, 0);
 	if (bit) {
@@ -145,8 +141,6 @@ static void w1_write_bit(struct device *dev, int bit)
 		api->write_bit(ctx, 1);
 		k_busy_wait(10);
 	}
-
-	irq_unlock(key);
 }
 
 static void w1_pre_write(struct device *dev)
